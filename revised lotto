@@ -1,0 +1,48 @@
+//SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.5.0 <0.9.0;
+
+contract Lottery {
+
+    uint ticketPrice = 0.01 ether;
+    uint maxTicketCount = 10;
+    uint maxTicketPrice = 0.1 ether; 
+    uint tickets = 0;
+    mapping (address => uint256) public players;
+    address public owner;
+    address payable[] winner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    receive() external payable {
+        msg.sender != owner;
+        require(msg.value >= ticketPrice); //msg.value must be greater than or equal to .01
+        require(msg.value <= maxTicketPrice); //requires value sent to address to be less than or equal .1 ether
+    }
+    
+    function buyTickets(address _players, uint _tickets) public payable {
+        require(players[_players] + _tickets + tickets <= maxTicketCount); //requires user address to have less than 10 tickets
+        addTickets(_players, _tickets); // add tickets to players array
+    }
+    
+    
+    function addTickets(address _players, uint _tickets) private {
+        players[_players] = players[_players] + _tickets; //add tickets to users account
+        
+    }
+    function removeTickets(address _players, uint _tickets) private {
+        require(players[_players] >= _tickets);
+        players[_players] = players[_players] - _tickets;
+    }
+
+    function viewTickets(uint _tickets) public view returns(uint) {
+        return _tickets;
+    }
+
+    function payWinner() public payable {
+
+    }
+
+        
